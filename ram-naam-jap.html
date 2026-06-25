@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>राम नाम जप · Ram Naam Jap</title>
+<style>
+  :root{
+    --ivory: #FFF8E7;
+    --ivory-deep: #FBF0D9;
+    --saffron: #FF9933;
+    --saffron-deep: #E07B1A;
+    --maroon: #8B1A1A;
+    --maroon-deep: #5E1010;
+    --gold: #D4A017;
+    --ink: #2B1810;
+    --ink-soft: #5A4636;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ivory);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overscroll-behavior: none;
+    height: 100%;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(255,153,51,0.10), transparent 55%),
+      repeating-linear-gradient(45deg, rgba(212,160,23,0.035) 0px, rgba(212,160,23,0.035) 2px, transparent 2px, transparent 14px);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: env(safe-area-inset-top, 18px) 18px calc(env(safe-area-inset-bottom, 18px) + 18px);
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0 4px;
+  }
+
+  .om {
+    font-size: 22px;
+    color: var(--saffron-deep);
+    letter-spacing: 2px;
+  }
+
+  h1 {
+    font-family: 'Rozha One', Georgia, serif;
+    font-size: 30px;
+    margin: 2px 0 0;
+    color: var(--maroon);
+    letter-spacing: 0.5px;
+  }
+
+  h1 .small {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  /* ---------- Mala ring + count ---------- */
+  .mala-stage {
+    position: relative;
+    width: 270px;
+    height: 270px;
+    margin: 18px auto 8px;
+    flex-shrink: 0;
+  }
+
+  .mala-stage svg { width: 100%; height: 100%; display: block; }
+
+  .bead {
+    transition: fill 0.25s ease, r 0.25s ease;
+  }
+  .bead.lit { fill: var(--saffron); }
+  .bead.unlit { fill: #EDE0C4; }
+  .sumeru.lit { fill: var(--maroon); }
+  .sumeru.unlit { fill: #DCC9A0; }
+
+  .center-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 170px;
+  }
+
+  .count-number {
+    font-family: 'Rozha One', Georgia, serif;
+    font-size: 52px;
+    color: var(--maroon);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .count-label {
+    font-size: 10.5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  .mala-progress {
+    font-size: 12px;
+    color: var(--gold);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  /* ---------- Input zone ---------- */
+  .jap-form {
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .input-row {
+    position: relative;
+    width: 100%;
+  }
+
+  #jap-input {
+    width: 100%;
+    font-family: 'Rozha One', Georgia, serif;
+    font-size: 26px;
+    text-align: center;
+    color: var(--maroon-deep);
+    background: var(--ivory-deep);
+    border: 2px solid rgba(139,26,26,0.18);
+    border-radius: 16px;
+    padding: 16px 14px;
+    outline: none;
+    caret-color: var(--saffron-deep);
+  }
+
+  #jap-input:focus {
+    border-color: var(--saffron);
+    box-shadow: 0 0 0 4px rgba(255,153,51,0.16);
+  }
+
+  #jap-input::placeholder {
+    color: rgba(91,16,16,0.35);
+    font-size: 20px;
+  }
+
+  .hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    min-height: 16px;
+  }
+
+  .hint.flash { color: var(--maroon); font-weight: 700; }
+
+  /* ---------- Stats row ---------- */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-top: 18px;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(212,160,23,0.3);
+    border-radius: 14px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+
+  .stat-card .val {
+    font-family: 'Rozha One', Georgia, serif;
+    font-size: 22px;
+    color: var(--maroon);
+  }
+
+  .stat-card .lbl {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-top: 2px;
+    font-weight: 600;
+  }
+
+  /* ---------- Goal & actions ---------- */
+  .goal-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .chip {
+    border: 1.5px solid var(--gold);
+    color: var(--maroon-deep);
+    background: transparent;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .chip.active {
+    background: var(--saffron);
+    border-color: var(--saffron-deep);
+    color: #fff;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  .btn {
+    flex: 1;
+    border: none;
+    border-radius: 14px;
+    padding: 13px 10px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .btn-share {
+    background: var(--maroon);
+    color: var(--ivory);
+  }
+
+  .btn-reset {
+    background: transparent;
+    color: var(--maroon-deep);
+    border: 1.5px solid rgba(139,26,26,0.35);
+  }
+
+  footer {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-soft);
+    opacity: 0.8;
+  }
+
+  /* Toast for mala completion */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--maroon);
+    color: var(--ivory);
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    white-space: nowrap;
+    z-index: 50;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bead, .toast { transition: none !important; }
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Rozha+One&family=Inter:wght@400;600;700&display=swap');
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="om">ॐ</div>
+    <h1>राम नाम जप
+      <span class="small">Ram Naam Jap Counter</span>
+    </h1>
+  </header>
+
+  <div class="mala-stage">
+    <svg viewBox="0 0 270 270" id="mala-svg"></svg>
+    <div class="center-text">
+      <div class="count-number" id="count-display">0</div>
+      <div class="count-label">Total Jap</div>
+      <div class="mala-progress" id="mala-progress">Mala 1 · bead 0/108</div>
+    </div>
+  </div>
+
+  <form class="jap-form" id="jap-form" autocomplete="off">
+    <div class="input-row">
+      <input
+        id="jap-input"
+        type="text"
+        inputmode="text"
+        placeholder="राम"
+        autocapitalize="off"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+    <div class="hint" id="hint">Type "Ram" or "राम" and press enter / space after each one</div>
+  </form>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="val" id="stat-malas">0</div>
+      <div class="lbl">Malas Done</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" id="stat-today">0</div>
+      <div class="lbl">Today</div>
+    </div>
+  </div>
+
+  <div class="goal-row" id="goal-row">
+    <button type="button" class="chip" data-goal="108">108</button>
+    <button type="button" class="chip" data-goal="1008">1,008</button>
+    <button type="button" class="chip" data-goal="11000">11,000</button>
+    <button type="button" class="chip" data-goal="100000">1,00,000</button>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn-share" id="share-btn">Share Count</button>
+    <button type="button" class="btn btn-reset" id="reset-btn">Reset</button>
+  </div>
+
+  <footer>जय श्री राम 🙏 Your count is saved on this device only</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'ramNaamJapData_v1';
+  const BEADS = 108;
+
+  let data = load();
+
+  function todayStr(){
+    const d = new Date();
+    return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  }
+
+  function load(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.day !== todayStr()) {
+          parsed.todayCount = 0;
+          parsed.day = todayStr();
+        }
+        return parsed;
+      }
+    } catch(e) {}
+    return { total: 0, todayCount: 0, day: todayStr(), goal: null };
+  }
+
+  function save(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+  }
+
+  // ---------- Build mala SVG ----------
+  const svg = document.getElementById('mala-svg');
+  const cx = 135, cy = 135, radius = 118;
+  const beadEls = [];
+
+  for (let i = 0; i < BEADS; i++) {
+    const angle = (i / BEADS) * 2 * Math.PI - Math.PI / 2;
+    const x = cx + radius * Math.cos(angle);
+    const y = cy + radius * Math.sin(angle);
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', x.toFixed(2));
+    circle.setAttribute('cy', y.toFixed(2));
+    circle.setAttribute('r', 6.2);
+    circle.setAttribute('class', 'bead unlit');
+    svg.appendChild(circle);
+    beadEls.push(circle);
+  }
+
+  // Sumeru (the guru bead, marking start/end of mala) at top
+  const sumeruAngle = -Math.PI / 2;
+  const sx = cx + radius * Math.cos(sumeruAngle);
+  const sy = cy + radius * Math.sin(sumeruAngle);
+  const sumeru = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  sumeru.setAttribute('cx', sx.toFixed(2));
+  sumeru.setAttribute('cy', sy.toFixed(2));
+  sumeru.setAttribute('r', 9);
+  sumeru.setAttribute('class', 'sumeru unlit');
+  svg.appendChild(sumeru);
+
+  function renderMala(){
+    const posInMala = data.total % BEADS;
+    for (let i = 0; i < BEADS; i++) {
+      if (i < posInMala) {
+        beadEls[i].setAttribute('class', 'bead lit');
+      } else {
+        beadEls[i].setAttribute('class', 'bead unlit');
+      }
+    }
+    const malasDone = Math.floor(data.total / BEADS);
+    sumeru.setAttribute('class', malasDone > 0 ? 'sumeru lit' : 'sumeru unlit');
+  }
+
+  // ---------- Render stats ----------
+  const countDisplay = document.getElementById('count-display');
+  const malaProgress = document.getElementById('mala-progress');
+  const statMalas = document.getElementById('stat-malas');
+  const statToday = document.getElementById('stat-today');
+  const goalRow = document.getElementById('goal-row');
+
+  function fmt(n){ return n.toLocaleString('en-IN'); }
+
+  function renderAll(){
+    countDisplay.textContent = fmt(data.total);
+    const malasDone = Math.floor(data.total / BEADS);
+    const posInMala = data.total % BEADS;
+    const currentMala = malasDone + 1;
+    malaProgress.textContent = 'Mala ' + currentMala + ' · bead ' + posInMala + '/' + BEADS;
+    statMalas.textContent = fmt(malasDone);
+    statToday.textContent = fmt(data.todayCount);
+    renderMala();
+    renderGoalChips();
+  }
+
+  function renderGoalChips(){
+    [...goalRow.querySelectorAll('.chip')].forEach(chip => {
+      const g = parseInt(chip.dataset.goal, 10);
+      chip.classList.toggle('active', data.goal === g);
+    });
+  }
+
+  goalRow.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const g = parseInt(chip.dataset.goal, 10);
+      data.goal = (data.goal === g) ? null : g;
+      save();
+      renderGoalChips();
+    });
+  });
+
+  // ---------- Counting logic ----------
+  const input = document.getElementById('jap-input');
+  const form = document.getElementById('jap-form');
+  const hint = document.getElementById('hint');
+  const toast = document.getElementById('toast');
+
+  // Accept common spellings / scripts for "Ram"
+  function isRam(word){
+    const w = word.trim().toLowerCase();
+    if (!w) return false;
+    const variants = ['ram', 'raam', 'rama', 'राम', 'श्रीराम', 'shriram', 'shree ram', 'jai shree ram', 'jai shri ram', 'sitaram', 'sita ram'];
+    return variants.includes(w);
+  }
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function flashHint(msg, isError){
+    hint.textContent = msg;
+    hint.classList.toggle('flash', !!isError);
+    clearTimeout(flashHint._t);
+    flashHint._t = setTimeout(() => {
+      hint.textContent = 'Type "Ram" or "राम" and press enter / space after each one';
+      hint.classList.remove('flash');
+    }, 1600);
+  }
+
+  function registerJap(){
+    data.total += 1;
+    data.todayCount += 1;
+
+    const posInMala = data.total % BEADS;
+    if (posInMala === 0) {
+      const malaNum = Math.floor(data.total / BEADS);
+      showToast('🔔 Mala ' + malaNum + ' complete — ' + fmt(data.total) + ' jap');
+    }
+    if (data.goal && data.total === data.goal) {
+      showToast('🙏 Goal of ' + fmt(data.goal) + ' reached! जय श्री राम');
+    }
+
+    save();
+    renderAll();
+  }
+
+  function processBuffer(raw, viaEnter){
+    // split on whitespace, last token may still be "in progress" if not via enter
+    const trimmed = raw;
+    if (!trimmed) return '';
+
+    if (viaEnter) {
+      const word = trimmed.trim();
+      if (isRam(word)) {
+        registerJap();
+      } else if (word) {
+        flashHint('Not recognized — try "Ram" or "राम"', true);
+      }
+      return '';
+    }
+
+    // space-triggered: process all complete words, keep last partial word in box
+    if (/\s$/.test(trimmed)) {
+      const parts = trimmed.trim().split(/\s+/);
+      parts.forEach(p => {
+        if (isRam(p)) registerJap();
+      });
+      return '';
+    }
+
+    return trimmed;
+  }
+
+  input.addEventListener('input', () => {
+    const val = input.value;
+    if (/\s$/.test(val)) {
+      input.value = processBuffer(val, false);
+    }
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    input.value = processBuffer(input.value, true);
+    input.focus();
+  });
+
+  // Double-tap the mala ring as an alternate manual increment (long-press style devotion tap)
+  document.querySelector('.mala-stage').addEventListener('dblclick', () => {
+    registerJap();
+  });
+
+  // ---------- Share & reset ----------
+  document.getElementById('share-btn').addEventListener('click', async () => {
+    const malasDone = Math.floor(data.total / BEADS);
+    const text = '🕉️ राम नाम जप\nToday: ' + fmt(data.todayCount) + ' jap\nTotal: ' + fmt(data.total) + ' jap (' + fmt(malasDone) + ' malas)\nजय श्री राम 🙏';
+    if (navigator.share) {
+      try { await navigator.share({ text }); } catch(e) {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied to clipboard');
+      } catch(e) {
+        showToast(text);
+      }
+    }
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (confirm('Reset all jap count? This cannot be undone.')) {
+      data = { total: 0, todayCount: 0, day: todayStr(), goal: data.goal };
+      save();
+      renderAll();
+    }
+  });
+
+  // Keep input focused-friendly on mobile, but don't force keyboard open on load
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
